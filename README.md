@@ -8,7 +8,7 @@ JMX是[Java Management Extensions]([Getting Started with Java Management Extensi
 
 
 
-![](assets/jvm-monitoring.drawio (1).png)
+![](assets/jvm-monitoring.drawio.png)
 
 主要有4部分组成：
 
