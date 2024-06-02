@@ -19,7 +19,7 @@ metadata:
   name: kubecost-grafana
   namespace: kubecost
 ---
-# Source: cost-analyzer/charts/prometheus/templates/node-exporter-serviceaccount.yaml
+Source: cost-analyzer/charts/prometheus/templates/node-exporter-serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -19561,7 +19561,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: "32Gi"
+      storage: "20Gi"
 ---
 # Source: cost-analyzer/templates/cost-analyzer-pvc-template.yaml
 kind: PersistentVolumeClaim
@@ -19570,7 +19570,6 @@ metadata:
   name: kubecost-cost-analyzer
   namespace: kubecost
   labels:
-
     app.kubernetes.io/name: cost-analyzer
     helm.sh/chart: cost-analyzer-1.108.0
     app.kubernetes.io/instance: kubecost
@@ -19581,7 +19580,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 32Gi
+      storage: 20Gi
 ---
 # Source: cost-analyzer/charts/grafana/templates/clusterrole.yaml
 kind: ClusterRole
@@ -19853,31 +19852,31 @@ spec:
     release: kubecost
 ---
 # Source: cost-analyzer/charts/prometheus/templates/node-exporter-service.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  annotations:
-    prometheus.io/scrape: "true"
-  labels:
-    component: "node-exporter"
-    app: prometheus
-    release: kubecost
-    chart: prometheus-11.0.2
-    heritage: Helm
-  name: kubecost-prometheus-node-exporter
-  namespace: kubecost
-spec:
-  clusterIP: None
-  ports:
-    - name: metrics
-      port: 9100
-      protocol: TCP
-      targetPort: 9100
-  selector:
-    component: "node-exporter"
-    app: prometheus
-    release: kubecost
-  type: "ClusterIP"
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   annotations:
+#     prometheus.io/scrape: "true"
+#   labels:
+#     component: "node-exporter"
+#     app: prometheus
+#     release: kubecost
+#     chart: prometheus-11.0.2
+#     heritage: Helm
+#   name: kubecost-prometheus-node-exporter
+#   namespace: kubecost
+# spec:
+#   clusterIP: None
+#   ports:
+#     - name: metrics
+#       port: 9100
+#       protocol: TCP
+#       targetPort: 9100
+#   selector:
+#     component: "node-exporter"
+#     app: prometheus
+#     release: kubecost
+#   type: "ClusterIP"
 ---
 # Source: cost-analyzer/charts/prometheus/templates/server-service.yaml
 apiVersion: v1
@@ -19934,66 +19933,66 @@ spec:
   sessionAffinity: None
 ---
 # Source: cost-analyzer/charts/prometheus/templates/node-exporter-daemonset.yaml
-apiVersion: apps/v1
-kind: DaemonSet
-metadata:
-  labels:
-    component: "node-exporter"
-    app: prometheus
-    release: kubecost
-    chart: prometheus-11.0.2
-    heritage: Helm
-  name: kubecost-prometheus-node-exporter
-  namespace: kubecost
-spec:
-  selector:
-    matchLabels:
-      component: "node-exporter"
-      app: prometheus
-      release: kubecost
-  updateStrategy:
-    type: RollingUpdate
-  template:
-    metadata:
-      labels:
-        component: "node-exporter"
-        app: prometheus
-        release: kubecost
-        chart: prometheus-11.0.2
-        heritage: Helm
-    spec:
-      serviceAccountName: kubecost-prometheus-node-exporter
-      dnsPolicy: "ClusterFirstWithHostNet"
-      containers:
-        - name: prometheus-node-exporter
-          image: "prom/node-exporter:v1.7.0"
-          imagePullPolicy: "IfNotPresent"
-          args:
-            - --path.procfs=/host/proc
-            - --path.sysfs=/host/sys
-            - --web.listen-address=:9100
-          ports:
-            - name: metrics
-              containerPort: 9100
-              hostPort: 9100
-          resources:
-            {}
-          volumeMounts:
-            - name: proc
-              mountPath: /host/proc
-              readOnly:  true
-            - name: sys
-              mountPath: /host/sys
-              readOnly: true
-      hostNetwork: true
-      hostPID: true
-      volumes:
-        - name: proc
-          hostPath:
-            path: /proc
-        - name: sys
-          hostPath:
-            path: /sys
+# apiVersion: apps/v1
+# kind: DaemonSet
+# metadata:
+#   labels:
+#     component: "node-exporter"
+#     app: prometheus
+#     release: kubecost
+#     chart: prometheus-11.0.2
+#     heritage: Helm
+#   name: kubecost-prometheus-node-exporter
+#   namespace: kubecost
+# spec:
+#   selector:
+#     matchLabels:
+#       component: "node-exporter"
+#       app: prometheus
+#       release: kubecost
+#   updateStrategy:
+#     type: RollingUpdate
+#   template:
+#     metadata:
+#       labels:
+#         component: "node-exporter"
+#         app: prometheus
+#         release: kubecost
+#         chart: prometheus-11.0.2
+#         heritage: Helm
+#     spec:
+#       serviceAccountName: kubecost-prometheus-node-exporter
+#       dnsPolicy: "ClusterFirstWithHostNet"
+#       containers:
+#         - name: prometheus-node-exporter
+#           image: "prom/node-exporter:v1.7.0"
+#           imagePullPolicy: "IfNotPresent"
+#           args:
+#             - --path.procfs=/host/proc
+#             - --path.sysfs=/host/sys
+#             - --web.listen-address=:9100
+#           ports:
+#             - name: metrics
+#               containerPort: 9100
+#               hostPort: 9100
+#           resources:
+#             {}
+#           volumeMounts:
+#             - name: proc
+#               mountPath: /host/proc
+#               readOnly:  true
+#             - name: sys
+#               mountPath: /host/sys
+#               readOnly: true
+#       hostNetwork: true
+#       hostPID: true
+#       volumes:
+#         - name: proc
+#           hostPath:
+#             path: /proc
+#         - name: sys
+#           hostPath:
+#             path: /sys
 ---
 # Source: cost-analyzer/charts/grafana/templates/deployment.yaml
 apiVersion: apps/v1
@@ -20303,7 +20302,7 @@ spec:
               - ALL
             privileged: false
             readOnlyRootFilesystem: true
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           ports:
           - name: tcp-model
             containerPort: 9003
@@ -20343,7 +20342,7 @@ spec:
                   name: kubecost-cost-analyzer
                   key: prometheus-server-endpoint
             - name: CLOUD_PROVIDER_API_KEY
-              value: "XXXXXXXXXXX" # The GCP Pricing API key.This GCP api key is expected to be here and is limited to accessing google's billing API.
+              value: "AIzaSyDXQPG_MHUEy9neR7stolq6l0ujXmjJlvk" # The GCP Pricing API key.This GCP api key is expected to be here and is limited to accessing google's billing API.
             - name: CONFIG_PATH
               value: /var/configs/
             - name: DB_PATH
@@ -20446,7 +20445,7 @@ spec:
             requests:
               cpu: 10m
               memory: 55Mi
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           readinessProbe:
             httpGet:
               path: /healthz

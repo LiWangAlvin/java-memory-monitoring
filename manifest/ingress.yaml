@@ -1,0 +1,97 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana
+  namespace: default
+spec:
+  rules:
+  - host: grafana.mytest.io
+    http:
+      paths:
+      - path: /
+        backend:
+          service:
+            name: grafana
+            port:
+              number: 80
+        pathType: Prefix
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: logstash
+  namespace: default
+spec:
+  rules:
+  - host: logstash.mytest.io
+    http:
+      paths:
+      - path: /
+        backend:
+          service:
+            name: logstash
+            port:
+              number: 8080
+        pathType: Prefix
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: demo-app
+  namespace: default
+spec:
+  rules:
+  - host: demo.mytest.io
+    http:
+      paths:
+      - path: /
+        backend:
+          service:
+            name: demo-app
+            port:
+              number: 8080
+        pathType: Prefix
+      - path: /metrics
+        backend:
+          service:
+            name: demo-app
+            port:
+              number: 8088
+        pathType: Prefix
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: opencost
+  namespace: opencost
+spec:
+  rules:
+  - host: opencost.mytest.io
+    http:
+      paths:
+      - path: /
+        backend:
+          service:
+            name: opencost
+            port:
+              number: 9090
+        pathType: Prefix
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kubecost
+  namespace: kubecost
+spec:
+  rules:
+  - host: kubecost.mytest.io
+    http:
+      paths:
+      - path: /
+        backend:
+          service:
+            name: kubecost-cost-analyzer
+            port:
+              number: 9090
+        pathType: Prefix

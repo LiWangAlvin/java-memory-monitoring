@@ -138,6 +138,11 @@ spec:
     metadata:
       labels:
         app: opencost
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/scheme: 'http'
+        prometheus.io/path: '/metrics'
+        prometheus.io/port: '9003'
     spec:
       restartPolicy: Always
       serviceAccountName: opencost
@@ -154,7 +159,7 @@ spec:
           env:
             - name: PROMETHEUS_SERVER_ENDPOINT
               value: "http://prometheus-server.default.svc" # The endpoint should have the form http://<service-name>.<namespace-name>.svc
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -175,7 +180,7 @@ spec:
             limits:
               cpu: "999m"
               memory: "1G"
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
 ---
 
 # Expose the cost model with a service

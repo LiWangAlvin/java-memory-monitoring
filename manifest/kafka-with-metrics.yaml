@@ -23,12 +23,23 @@ spec:
       min.insync.replicas: 2
       inter.broker.protocol.version: "3.7"
     storage:
-      type: jbod
-      volumes:
-      - id: 0
-        type: persistent-claim
-        size: 20Gi
-        deleteClaim: false
+      type: ephemeral
+    # storage:
+    #   type: jbod
+    #   volumes:
+    #   - id: 0
+    #     type: persistent-claim
+    #     size: 20Gi
+    #     deleteClaim: false
+    resources:
+      requests:
+        memory: 4Gi
+        cpu: 100m
+      limits:
+        memory: 4Gi
+    jvmOptions:
+      "-Xmx": "2867m"
+      "-Xms": "2867m"
     template:
       pod:
         metadata:
@@ -37,9 +48,9 @@ spec:
             prometheus.io/scheme: 'http'
             prometheus.io/path: '/metrics'
             prometheus.io/port: '9404'
-    resources:
-      pod:
-
+          labels:
+            app: kafka
+        resources:
     metricsConfig:
       type: jmxPrometheusExporter
       valueFrom:
@@ -49,9 +60,11 @@ spec:
   zookeeper:
     replicas: 3
     storage:
-      type: persistent-claim
-      size: 20Gi
-      deleteClaim: false
+      type: ephemeral
+    # storage:
+    #   type: persistent-claim
+    #   size: 20Gi
+    #   deleteClaim: false
     metricsConfig:
       type: jmxPrometheusExporter
       valueFrom:
