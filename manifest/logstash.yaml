@@ -16,7 +16,7 @@ spec:
         prometheus.io/scrape: 'true'
         prometheus.io/scheme: 'http'
         prometheus.io/path: '/metrics'
-        prometheus.io/port: '8088'
+        # prometheus.io/port: '8088'
     spec:
       containers:
       - name: logstash
@@ -24,22 +24,36 @@ spec:
         imagePullPolicy: IfNotPresent
         resources:
           requests:
-            memory: 1Gi
+            memory: 2Gi
             cpu: 100m
           limits:
-            memory: 1Gi
+            memory: 2Gi
         ports:
         - name: http
           containerPort: 8080
+        - name: json-metircs
+          containerPort: 9600
         - name: jmx-metrics
           containerPort: 8088
         env:
         - name: LS_JAVA_OPTS
-          value: "-Xms512m -Xmx512m -javaagent:/jmx_prometheus_javaagent-0.20.0.jar=8088:/prometheus-jmx-config.yaml"
+          value: "-Xms1g -Xmx1g -javaagent:/jmx_prometheus_javaagent-0.20.0.jar=8088:/prometheus-jmx-config.yaml"
         volumeMounts:
         - name: pipelines
           mountPath: /usr/share/logstash/config/pipelines.yml
           subPath: pipelines.yml
+      - name: logstash-exporter
+        image: kuskoman/logstash-exporter:v1.6.4
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: 128Mi
+            cpu: 100m
+          limits:
+            memory: 256Mi
+        ports:
+        - name: metrics
+          containerPort: 9198
       volumes:
       - name: pipelines
         configMap:
@@ -56,12 +70,14 @@ data:
         input {
           http {
             port => 8080
+            codec => json
           }
         }
         output {
           kafka {
             bootstrap_servers => "my-cluster-kafka-brokers:9092"
             topic_id => "test"
+            codec => "json"
           }
         }
 ---
@@ -72,10 +88,13 @@ metadata:
   labels:
     app: logstash
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
   - port: 8080
     protocol: TCP
     name: http
+  - port: 9600
+    protocol: TCP
+    name: json-metircs
   selector:
     app: logstash
