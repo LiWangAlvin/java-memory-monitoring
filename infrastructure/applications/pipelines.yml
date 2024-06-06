@@ -1,0 +1,15 @@
+- pipeline.id: main
+  config.string: |
+    input {
+      http {
+        port => 8080
+        codec => json
+      }
+    }
+    output {
+      kafka {
+        bootstrap_servers => "kafka-kafka-brokers.kafka:9092"
+        topic_id => "test"
+        codec => "json"
+      }
+    }
